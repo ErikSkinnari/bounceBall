@@ -1,4 +1,4 @@
-let balls = [];
+let ball;
 let obstacles = [];
 let paddleSpeed;
 let slider;
@@ -11,9 +11,7 @@ function setup() {
   slider = createSlider(1, 20, 5);
   slider.style('width', '80px');
 
-  //balls.push(new Ball(100,100,20,1,-2));
-  //balls.push(new Ball(50,50,10,3,-1));
-  balls.push(new Ball(20,20,5,2,-4));
+  ball = new Ball(20,20,5,2,-4);
 
   obstacles.push(new Paddle(20, (width-40), 60, 10));
   obstacles.push(new Rectangle(100, 200, 100, 50));
@@ -24,12 +22,9 @@ function draw() {
   background(0);
   stroke(255);
 
-  for (let i = balls.length - 1; i >= 0; i--) {
-
-    balls[i].move();
-    balls[i].display();
-    balls[i].update();
-  }
+  ball.move();
+  ball.display();
+  ball.update();
 
   for (let i = obstacles.length - 1; i >= 0; i--) {
     obstacles[i].move();
@@ -47,7 +42,8 @@ class Ball {
   }
 
   update(){
-    // side collitions
+
+    // Check for side collisions
     if(this.velX > 0 && this.x+this.r >= width || this.velX < 0 && this.x-this.r <= 0){
       this.velX *= -1;
     }
@@ -56,17 +52,26 @@ class Ball {
       this.velY *= -1;
     }
     if (this.velY > 0 && this.y+this.r >= height) {
-      //balls.pop(this);
-      this.velY *= -1;
+      // this.velY *= -1;
+      background(255,0,0);
+      noLoop();
     }
-
+    
     for (let i = obstacles.length - 1; i >= 0; i--) {
-      if(
-        this.velY > 0 
-        && ((this.x + this.r > obstacles[i].x && this.x + this.r < (obstacles[i].x + obstacles[i].width)))
-        && (this.y + this.r >= obstacles[i].y && this.y + this.r < obstacles[i].y + obstacles[i].height)){
-        this.velY *= -1;
-        console.log('collision!!!')
+      // Check for side collisions
+      if(this.x + this.r + this.velX > obstacles[i].x &&
+        this.x + this.velX < obstacles[i].x + obstacles[i].width &&
+        this.y + this.r > obstacles[i].y &&
+        this.y < obstacles[i].y + obstacles[i].height){
+          this.velX *= -1;
+      }
+
+      // Check for top / bottom collisions
+      if(this.x + this.r > obstacles[i].x &&
+        this.x < obstacles[i].x + obstacles[i].width &&
+        this.y + this.r + this.velY > obstacles[i].y &&
+        this.y + this.velY < obstacles[i].y + obstacles[i].height) {
+          this.velY *= -1;
       }
     }
   }
