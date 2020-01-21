@@ -18,19 +18,8 @@ class Ball {
       this.velY *= -1;
     }
     if (this.velY > 0 && this.y + this.r >= height) {
-      //obstacles.every( o => pop());
-      background(255, 0, 0);
-      text('Game Over!', width / 2 - 70, height / 2 - 20);
-      if (Score > HighScore) {
-        text('New HighScore!', width / 2 - 70, height / 2 + 20);
-      }
-      // this.velY *= -1;
-      if (Score > HighScore) {
-        HighScore = Score
-        window.sessionStorage.HighScore = HighScore;
-      }
-      noLoop();
-
+      // Game Over
+      return false;
     }
 
     for (let i = obstacles.length - 1; i >= 0; i--) {
