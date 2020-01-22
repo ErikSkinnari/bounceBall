@@ -2,6 +2,7 @@ let ball;
 let obstacles = [];
 
 let paddleSpeed = 10;
+let paddleHits = 0;
 let speedchange = .4;
 
 let Score = 0;
@@ -20,8 +21,8 @@ function setup() {
 
   setupGameBoard();
 
-  let startVelX = random(2, 4);
-  let startVelY = random(2, 4);
+  let startVelX = 2;
+  let startVelY = 2;
 
   let isXVelNegative = random(-1, 1);
   if (isXVelNegative < 0) {
@@ -54,6 +55,9 @@ function draw() {
   }
   textSize(20);
   fill(255);
+  if(Score > 1000){
+    noLoop();
+  }
   textAlign(LEFT);
   text('Score: ' + Score, 20, 30);
   textAlign(RIGHT);
@@ -88,13 +92,124 @@ function gameOver() {
   if (Score > HighScore) {
     HighScore = Score
     window.localStorage.HighScore = HighScore;
+    
   }
   noLoop();
 
+
+
   let button = createButton('New Game');
-  button.position(windowWidth/2, 400);
-  button.center();
+  button.position(windowWidth/2 - button.width/2, 200 + canvasWidth - 100);
   button.mousePressed(e => {
     location.reload();
   });
+}
+
+class Ball {
+  
+  constructor(x, y, r, velx, vely) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.velX = velx;
+    this.velY = vely;
+    this.speedchange = speedchange;
+  }
+
+  update() {
+
+    // Check for side collisions
+    if (this.velX > 0 && this.x + this.r >= width || this.velX < 0 && this.x - this.r <= 0) {
+      this.velX *= -1;
+    }
+    // ceiling collition
+    if (this.velY < 0 && this.y - this.r <= 0) {
+      this.velY *= -1;
+    }
+    if (this.velY > 0 && this.y + this.r >= height) {
+      // Game Over
+      return false;
+    }
+
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      // Check for side collisions
+      if (this.x + this.r + this.velX > obstacles[i].x &&
+        this.x + this.velX < obstacles[i].x + obstacles[i].width &&
+        this.y + this.r > obstacles[i].y &&
+        this.y < obstacles[i].y + obstacles[i].height) {
+        this.velX *= -1;
+      }
+
+      // Check for top / bottom collisions
+      if (this.x + this.r > obstacles[i].x &&
+        this.x < obstacles[i].x + obstacles[i].width &&
+        this.y + this.r + this.velY > obstacles[i].y &&
+        this.y + this.velY < obstacles[i].y + obstacles[i].height) {
+        this.velY *= -1;
+
+        // Is this a paddle collision?
+        if (obstacles[i] instanceof Paddle) {
+          Score += 10;
+          paddleHits += 1;
+
+          // Increase ball speed, random on x OR y by 0,4
+          let xOrY = random(-1, 1)
+          if (xOrY < 0) {
+            if (this.velX > 0) {
+              this.velX += this.speedchange;
+            }
+            else {
+              this.velX -= this.speedchange;
+            }
+          }
+          else {
+            if (this.velY > 0) {
+              this.velY += this.speedchange;
+            }
+            else {
+              this.velY -= this.speedchange;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  move() {
+    this.x += this.velX;
+    this.y += this.velY;
+  }
+
+  display() {
+    ellipse(this.x, this.y, this.r * 2, this.r * 2);
+  }
+}
+
+function keyTyped() {
+  // Reset HighScore with keypress 'r'
+  if (key === 'r') {
+    window.sessionStorage.HighScore = 0;
+  }
+}
+
+class Paddle {
+  constructor(x, y, width, height) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+  }
+
+  move() {
+      if (keyIsDown(LEFT_ARROW) && this.x > 0) {
+          this.x -= paddleSpeed;
+      }
+      else if (keyIsDown(RIGHT_ARROW) && this.x + this.width < width) {
+          this.x += paddleSpeed;
+      }
+  }
+
+  display() {
+      rect(this.x, this.y, this.width, this.height);
+  }
 }
