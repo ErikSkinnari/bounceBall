@@ -15,7 +15,15 @@ else {
   HighScore = 0;
 }
 
+let hs;
+let highscorestable;
+
 let canvasWidth = 400;
+
+function preload() {
+  let url = '../gamehandler/gethighscores.php?gameid=1';
+  hs = loadJSON(url);
+}
 
 function setup() {
 
@@ -36,6 +44,7 @@ function setup() {
   ball = new Ball(width / 2, 20, 5, startVelX, startVelY);
 
   obstacles.push(new Paddle(20, (width - 40), 60, 10));
+
 }
 
 function draw() {
@@ -45,7 +54,7 @@ function draw() {
 
   ball.move();
   ball.display();
-  if(ball.update() == false){
+  if (ball.update() == false) {
     gameOver();
   }
 
@@ -55,7 +64,7 @@ function draw() {
   }
   textSize(20);
   fill(255);
-  if(Score > 1000){
+  if (Score > 1000) {
     noLoop();
   }
   textAlign(LEFT);
@@ -64,14 +73,15 @@ function draw() {
   text('HighScore: ' + HighScore, canvasWidth - 20, 30);
 }
 
+
 function setupGameBoard() {
-  let canvas = createCanvas(400, 400);
-  canvas.position(windowWidth/2 - canvasWidth/2, 200);
+  let canvas = createCanvas(canvasWidth, canvasWidth);
+  canvas.position(windowWidth / 2 - canvasWidth / 2, 200);
 
   textAlign(CENTER);
   let pageTitle = createDiv('Ball Bounce');
   pageTitle.class('title');
-  pageTitle.position(windowWidth/2 - canvasWidth/2, 50);
+  pageTitle.position(windowWidth / 2 - canvasWidth / 2, 50);
 
   let howToPlay = createDiv(
     '<ul><li>Play with left and right arrows</li>' +
@@ -79,6 +89,32 @@ function setupGameBoard() {
     '<li>Now go get that highscore!</li></ul>');
   howToPlay.class('instructions');
   howToPlay.position(100, 200);
+
+
+  if (hs !== null) {
+    let Highscores = createDiv();
+    Highscores.class('Highscores');
+    Highscores.position(windowWidth / 2 + canvasWidth / 2 + 100, 200);
+
+    let hsTitle = createElement('h3', 'Highscores (WIP)');
+
+    Highscores.child(hsTitle);
+
+    var hsTable = createElement('table');
+    let hsTableHead = createElement('thead', '<tr><th style="text-align: left;">Player</th><th style="text-align: left;">Score</th></tr>');
+
+    hsTable.child(hsTableHead);
+
+
+    var hsTableBody = createElement('tbody');
+    for (var score in hs) {
+    let row = createElement('tr', '<td>' + hs[score].playername + '</td><td>' + hs[score].score + '</td>');
+      hsTableBody.child(row);
+    }
+
+    hsTable.child(hsTableBody);
+    Highscores.child(hsTable);
+  }
 }
 
 function gameOver() {
@@ -92,21 +128,19 @@ function gameOver() {
   if (Score > HighScore) {
     HighScore = Score
     window.localStorage.HighScore = HighScore;
-    
+
   }
   noLoop();
 
-
-
   let button = createButton('New Game');
-  button.position(windowWidth/2 - button.width/2, 200 + canvasWidth - 100);
+  button.position(windowWidth / 2 - button.width / 2, 200 + canvasWidth - 100);
   button.mousePressed(e => {
     location.reload();
   });
 }
 
 class Ball {
-  
+
   constructor(x, y, r, velx, vely) {
     this.x = x;
     this.y = y;
@@ -194,22 +228,22 @@ function keyTyped() {
 
 class Paddle {
   constructor(x, y, width, height) {
-      this.x = x;
-      this.y = y;
-      this.width = width;
-      this.height = height;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
   }
 
   move() {
-      if (keyIsDown(LEFT_ARROW) && this.x > 0) {
-          this.x -= paddleSpeed;
-      }
-      else if (keyIsDown(RIGHT_ARROW) && this.x + this.width < width) {
-          this.x += paddleSpeed;
-      }
+    if (keyIsDown(LEFT_ARROW) && this.x > 0) {
+      this.x -= paddleSpeed;
+    }
+    else if (keyIsDown(RIGHT_ARROW) && this.x + this.width < width) {
+      this.x += paddleSpeed;
+    }
   }
 
   display() {
-      rect(this.x, this.y, this.width, this.height);
+    rect(this.x, this.y, this.width, this.height);
   }
 }
