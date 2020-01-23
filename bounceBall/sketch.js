@@ -1,16 +1,18 @@
-let PlayerName = "Player";
+// This code is very limited on comments on purpose. The variable names are not descriptive and badly named
+// The reason is to make it a weee bit more difficult to cheat a score into the highscore list. 
+
+// Stuff..
 let ball;
 let obstacles = [];
-
 let topAlign = 20;
 let middleAlign = 120;
 let canvasSize = 400;
-
 let ps = 10;
 let ph = 0;
 let sc = .4;
-
 let Score = 0;
+let hs;
+let highscorestable;
 let HighScore;
 if (window.localStorage.HighScore !== null && window.localStorage.HighScore >= 0) {
   HighScore = window.localStorage.HighScore;
@@ -20,40 +22,27 @@ else {
   HighScore = 0;
 }
 
-let hs;
-let highscorestable;
-
-
+// Name of the player - for the Highscore list
+let PlayerName = "Player";
 if(window.localStorage.PlayerName  !== null || window.localStorage.PlayerName !== "") {
   PlayerName = window.localStorage.PlayerName;
 }
-
-function preload() {
-  let url = '../gamehandler/gethighscores.php?gameid=1';
-  hs = loadJSON(url);
-}
+// Get current highscores
+// function preload() {
+//   let url = '../gamehandler/gethighscores.php?gameid=1';
+//   hs = loadJSON(url);
+// }
 
 function setup() {
 
   setupGameBoard();
 
-  let startVelX = 2;
-  let startVelY = 2;
-
-  let isXVelNegative = random(-1, 1);
-  if (isXVelNegative < 0) {
-    startVelX *= -1;
-  }
-  let isYVelNegative = random(-1, 1);
-  if (isYVelNegative < 0) {
-    startVelY *= -1;
-  }
-
+  // Decides the direction of the ball
+  let startVelX = (random(-1, 1) < 0 ? -2 : 2);
+  let startVelY = (random(-1, 1) < 0 ? -2 : 2);
   ball = new Ball(width / 2, 20, 5, startVelX, startVelY);
-
+  // Declaring the ballbounzer
   obstacles.push(new Paddle(20, (width - 40), 60, 10));
-
-  
 }
 
 function draw() {
@@ -87,11 +76,13 @@ function setupGameBoard() {
   let canvas = createCanvas(canvasSize, canvasSize);
   canvas.position(windowWidth / 2 - canvasSize / 2, middleAlign);
 
+  // Game title banner
   textAlign(CENTER);
   let pageTitle = createDiv('Paddle Frenzy');
   pageTitle.class('title');
   pageTitle.position(windowWidth / 2 - canvasSize / 2, topAlign);
 
+  // Insructions (left side of gameplay canvas)
   let howToPlay = createDiv(
     '<ul><li>Play with left and right arrows</li>' +
     '<li>The ball travels a little faster after every paddle touch</li>' +
@@ -100,32 +91,26 @@ function setupGameBoard() {
   howToPlay.class('instructions');
   howToPlay.position(100, middleAlign);
 
-
+  // If higscore list is loaded display the data
   if (hs !== null) {
     let Highscores = createDiv();
     Highscores.class('Highscores');
     Highscores.position(windowWidth / 2 + canvasSize / 2 + 100, middleAlign);
-
     let hsTitle = createElement('h3', 'Highscores (WIP)');
-
     Highscores.child(hsTitle);
-
     var hsTable = createElement('table');
     let hsTableHead = createElement('thead', '<tr><th style="text-align: left;">Player</th><th style="text-align: left;">Score</th></tr>');
-
     hsTable.child(hsTableHead);
-
-
     var hsTableBody = createElement('tbody');
     for (var score in hs) {
     let row = createElement('tr', '<td>' + hs[score].playername + '</td><td>' + hs[score].score + '</td>');
       hsTableBody.child(row);
     }
-
     hsTable.child(hsTableBody);
     Highscores.child(hsTable);
   }
 
+  // Playername input field
   let CurrentPlayer = createElement('h3', PlayerName);
   CurrentPlayer.position(windowWidth/2 - canvasSize/2, middleAlign + canvasSize + 5);
 
@@ -143,7 +128,6 @@ function gameOver() {
   if (Score > HighScore) {
     text('New HighScore!', width / 2, height / 2 + 20);
   }
-  // this.velY *= -1;
   if (Score > HighScore) {
     HighScore = Score
     window.localStorage.HighScore = HighScore;
@@ -257,32 +241,9 @@ function h() {
     method:"GET"
   };
   fetch(url, Param)
-  // .then(data => {return data.json()})
   .then(res => {console.log(res)})
   .catch(error => console.log(JSON.parse(JSON.stringify(error))))
 }
-// function h() {
-//   const url = '../gamehandler/highscoreinsert.php';
-//   const data = {
-//     ga:1,
-//     is:HighScore,
-//     sc:Score,
-//     ph:paddleHits,
-//     pn:PlayerName
-//   }
-//   console.log(data);
-//   const Param = {
-//     headers:{
-//       "content-type":"application/json; charset=UTF-8"
-//     },
-//     body:data,
-//     method:"POST"
-//   };
-//   fetch(url, Param)
-//   // .then(data => {return data.json()})
-//   .then(res => {console.log(res)})
-//   .catch(error => console.log(JSON.parse(JSON.stringify(error))))
-// }
 
 class Paddle {
   constructor(x, y, width, height) {
