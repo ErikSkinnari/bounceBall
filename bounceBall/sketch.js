@@ -2,9 +2,13 @@ let PlayerName = "Player";
 let ball;
 let obstacles = [];
 
-let paddleSpeed = 10;
-let paddleHits = 0;
-let speedchange = .4;
+let topAlign = 20;
+let middleAlign = 120;
+let canvasSize = 400;
+
+let ps = 10;
+let ph = 0;
+let sc = .4;
 
 let Score = 0;
 let HighScore;
@@ -19,10 +23,8 @@ else {
 let hs;
 let highscorestable;
 
-let canvasWidth = 400;
 
-
-if(window.localStorage.PlayerName  !== null) {
+if(window.localStorage.PlayerName  !== null || window.localStorage.PlayerName !== "") {
   PlayerName = window.localStorage.PlayerName;
 }
 
@@ -77,18 +79,18 @@ function draw() {
   textAlign(LEFT);
   text('Score: ' + Score, 20, 30);
   textAlign(RIGHT);
-  text('HighScore: ' + HighScore, canvasWidth - 20, 30);
+  text('HighScore: ' + HighScore, canvasSize - 20, 30);
 }
 
 
 function setupGameBoard() {
-  let canvas = createCanvas(canvasWidth, canvasWidth);
-  canvas.position(windowWidth / 2 - canvasWidth / 2, 200);
+  let canvas = createCanvas(canvasSize, canvasSize);
+  canvas.position(windowWidth / 2 - canvasSize / 2, middleAlign);
 
   textAlign(CENTER);
   let pageTitle = createDiv('Paddle Frenzy');
   pageTitle.class('title');
-  pageTitle.position(windowWidth / 2 - canvasWidth / 2, 50);
+  pageTitle.position(windowWidth / 2 - canvasSize / 2, topAlign);
 
   let howToPlay = createDiv(
     '<ul><li>Play with left and right arrows</li>' +
@@ -96,13 +98,13 @@ function setupGameBoard() {
     '<li>Now go get that highscore!</li><br>' +
     '<li>Press ENTER to reload</li></ul>');
   howToPlay.class('instructions');
-  howToPlay.position(100, 200);
+  howToPlay.position(100, middleAlign);
 
 
   if (hs !== null) {
     let Highscores = createDiv();
     Highscores.class('Highscores');
-    Highscores.position(windowWidth / 2 + canvasWidth / 2 + 100, 200);
+    Highscores.position(windowWidth / 2 + canvasSize / 2 + 100, middleAlign);
 
     let hsTitle = createElement('h3', 'Highscores (WIP)');
 
@@ -125,10 +127,10 @@ function setupGameBoard() {
   }
 
   let CurrentPlayer = createElement('h3', PlayerName);
-  CurrentPlayer.position(windowWidth/2 - canvasWidth/2, canvasWidth + 210);
+  CurrentPlayer.position(windowWidth/2 - canvasSize/2, middleAlign + canvasSize + 5);
 
   let nameInput = createElement('form', '<input type="text" id="textbox" style="width: 100;" placeholder="Enter your Name"><button id="submit">Confirm Name</button>');
-  nameInput.position(windowWidth/2 - canvasWidth/2, canvasWidth + 260);
+  nameInput.position(windowWidth/2 - canvasSize/2, middleAlign + canvasSize + 55);
 
   document.getElementById('submit').addEventListener('click',  function(){ 
     window.localStorage.PlayerName = document.getElementById('textbox').value; });
@@ -150,7 +152,7 @@ function gameOver() {
   noLoop();
 
   let button = createButton('New Game');
-  button.position(windowWidth / 2 - button.width / 2, 200 + canvasWidth - 100);
+  button.position(windowWidth / 2 - button.width / 2, middleAlign + canvasSize - 100);
   button.mousePressed(e => {
     location.reload();
   });
@@ -164,7 +166,7 @@ class Ball {
     this.r = r;
     this.velX = velx;
     this.velY = vely;
-    this.speedchange = speedchange;
+    this.speedchange = sc;
   }
 
   update() {
@@ -201,7 +203,7 @@ class Ball {
         // Is this a paddle collision?
         if (obstacles[i] instanceof Paddle) {
           Score += 10;
-          paddleHits += 1;
+          ph += 1;
 
           // Increase ball speed, random on x OR y by 0,4
           let xOrY = random(-1, 1)
@@ -250,7 +252,7 @@ function keyPressed() {
 }
 
 function h() {
-  const url = '../gamehandler/highscoreinsert.php?ga=1&is='+HighScore+'&sc='+Score+'&ph='+paddleHits+'&pn='+PlayerName;
+  const url = '../gamehandler/highscoreinsert.php?ga=1&is='+HighScore+'&sc='+Score+'&ph='+ph+'&pn='+PlayerName;
   const Param = {
     method:"GET"
   };
@@ -292,10 +294,10 @@ class Paddle {
 
   move() {
     if (keyIsDown(LEFT_ARROW) && this.x > 0) {
-      this.x -= paddleSpeed;
+      this.x -= ps;
     }
     else if (keyIsDown(RIGHT_ARROW) && this.x + this.width < width) {
-      this.x += paddleSpeed;
+      this.x += ps;
     }
   }
 
