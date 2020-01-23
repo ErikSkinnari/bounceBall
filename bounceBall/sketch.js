@@ -1,3 +1,4 @@
+let PlayerName = "Player";
 let ball;
 let obstacles = [];
 
@@ -19,6 +20,11 @@ let hs;
 let highscorestable;
 
 let canvasWidth = 400;
+
+
+if(window.localStorage.PlayerName  !== null) {
+  PlayerName = window.localStorage.PlayerName;
+}
 
 function preload() {
   let url = '../gamehandler/gethighscores.php?gameid=1';
@@ -45,6 +51,7 @@ function setup() {
 
   obstacles.push(new Paddle(20, (width - 40), 60, 10));
 
+  
 }
 
 function draw() {
@@ -79,14 +86,15 @@ function setupGameBoard() {
   canvas.position(windowWidth / 2 - canvasWidth / 2, 200);
 
   textAlign(CENTER);
-  let pageTitle = createDiv('Ball Bounce');
+  let pageTitle = createDiv('Paddle Frenzy');
   pageTitle.class('title');
   pageTitle.position(windowWidth / 2 - canvasWidth / 2, 50);
 
   let howToPlay = createDiv(
     '<ul><li>Play with left and right arrows</li>' +
     '<li>The ball travels a little faster after every paddle touch</li>' +
-    '<li>Now go get that highscore!</li></ul>');
+    '<li>Now go get that highscore!</li><br>' +
+    '<li>Press ENTER to reload</li></ul>');
   howToPlay.class('instructions');
   howToPlay.position(100, 200);
 
@@ -115,6 +123,15 @@ function setupGameBoard() {
     hsTable.child(hsTableBody);
     Highscores.child(hsTable);
   }
+
+  let CurrentPlayer = createElement('h3', PlayerName);
+  CurrentPlayer.position(windowWidth/2 - canvasWidth/2, canvasWidth + 210);
+
+  let nameInput = createElement('form', '<input type="text" id="textbox" style="width: 100;" placeholder="Enter your Name"><button id="submit">Confirm Name</button>');
+  nameInput.position(windowWidth/2 - canvasWidth/2, canvasWidth + 260);
+
+  document.getElementById('submit').addEventListener('click',  function(){ 
+    window.localStorage.PlayerName = document.getElementById('textbox').value; });
 }
 
 function gameOver() {
@@ -128,7 +145,7 @@ function gameOver() {
   if (Score > HighScore) {
     HighScore = Score
     window.localStorage.HighScore = HighScore;
-
+    h();
   }
   noLoop();
 
@@ -220,11 +237,50 @@ class Ball {
 }
 
 function keyTyped() {
-  // Reset HighScore with keypress 'r'
   if (key === 'r') {
-    window.sessionStorage.HighScore = 0;
+    console.log('r');
+    window.localStorage.HighScore = 0;
   }
 }
+
+function keyPressed() {
+  if (keyCode === ENTER) {
+    location.reload();
+  }
+}
+
+function h() {
+  const url = '../gamehandler/highscoreinsert.php?ga=1&is='+HighScore+'&sc='+Score+'&ph='+paddleHits+'&pn='+PlayerName;
+  const Param = {
+    method:"GET"
+  };
+  fetch(url, Param)
+  // .then(data => {return data.json()})
+  .then(res => {console.log(res)})
+  .catch(error => console.log(JSON.parse(JSON.stringify(error))))
+}
+// function h() {
+//   const url = '../gamehandler/highscoreinsert.php';
+//   const data = {
+//     ga:1,
+//     is:HighScore,
+//     sc:Score,
+//     ph:paddleHits,
+//     pn:PlayerName
+//   }
+//   console.log(data);
+//   const Param = {
+//     headers:{
+//       "content-type":"application/json; charset=UTF-8"
+//     },
+//     body:data,
+//     method:"POST"
+//   };
+//   fetch(url, Param)
+//   // .then(data => {return data.json()})
+//   .then(res => {console.log(res)})
+//   .catch(error => console.log(JSON.parse(JSON.stringify(error))))
+// }
 
 class Paddle {
   constructor(x, y, width, height) {
