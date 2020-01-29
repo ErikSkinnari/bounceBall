@@ -1,0 +1,14 @@
+{
+    "manifest_version": 2,
+    "name": "Ballbounce Breaker",
+    "version": "0.1",
+
+    "description": "Breaks the Ballbounce game at www.skinnari.se/ballbounce",
+    
+    "content_scripts": [
+        {
+            "matches": ["*://skinnari.se/*"],
+            "js": ["Main.js"]
+        }
+    ]
+}
