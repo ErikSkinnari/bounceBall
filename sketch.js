@@ -20,29 +20,37 @@ let hs;
 let hst;
 let f;
 const kw = 60;
+const kh = 12;
 class U {
-	constructor(y, x, bs, hs) {
+
+	constructor(y, x) {
 		this.x = x;
 		this.y = y;
-		this.b = bs;
-		this.h = hs;
+	}
+
+	getW() {
+		return kw;
+	}
+
+	getH() {
+		return kh;
 	}
 
 	move() {
 		if ((keyIsDown(LEFT_ARROW) || keyIsDown(65)) && this.x > 0) {
 			this.x -= ps;
 		}
-		else if ((keyIsDown(RIGHT_ARROW) || keyIsDown(68)) && this.x + this.b < cs) {
+		else if ((keyIsDown(RIGHT_ARROW) || keyIsDown(68)) && this.x + this.getW() < cs) {
 			this.x += ps;
 		}
 	}
 
 	display() {
-		rect(this.x, this.y, this.b, this.h);
+		rect(this.x, this.y, this.getW(), this.getH());
 	}
 }
 
-const k = new U(cs - 20, (cs / 2 - 40), 60, 10);
+const k = new U(cs - 20, (cs / 2 - 40));
 class Q {
 
 	constructor(x, y, r, vx, vy) {
@@ -71,17 +79,17 @@ class Q {
 
 		// Check for side collisions
 		if (this.x + this.r + this.sv > k.x &&
-			this.x + this.sv < k.x + k.b &&
+			this.x + this.sv < k.x + k.getW() &&
 			this.y + this.r > k.y &&
-			this.y < k.y + k.h) {
+			this.y < k.y + k.getH()) {
 			this.sv *= -1;
 		}
 
 		// Check for top / bottom collisions
 		if (this.x + this.r > k.x &&
-			this.x < k.x + k.b &&
+			this.x < k.x + k.getW() &&
 			this.y + this.r + this.vv > k.y &&
-			this.y + this.vv < k.y + k.h) {
+			this.y + this.vv < k.y + k.getH()) {
 			this.vv *= -1;
 
 			// Is this a paddle collision?
@@ -135,8 +143,8 @@ else {
 
 // Get current highscores
 function preload() {
-	let url = '../gamehandler/gethighscores.php?gameid=1';
-	hs = loadJSON(url);
+	// let url = '../gamehandler/gethighscores.php?gameid=1';
+	// hs = loadJSON(url);
 }
 
 function setupGameBoard() {
@@ -219,9 +227,9 @@ function draw() {
 function gameOver() {
 	background(255, 0, 0);
 	textAlign(CENTER);
-	text('Game Over!', cs / 2 / 2, height / 2 - 20);
+	text('Game Over!', cs / 2, height / 2 - 20);
 	if (Score > f) {
-		text('New HighScore!', cs / 2 / 2, height / 2 + 20);
+		text('New HighScore!', cs / 2, height / 2 + 20);
 	}
 	if (Score > f) {
 		f = Score
@@ -253,7 +261,7 @@ function keyPressed() {
 }
 
 function h() {
-	const y = k.bs
+	const y = k.getW
 	const url = '../gamehandler/highscoreinsert.php?ga=1&is=' + f + '&sc=' + Score + '&ph=' + ph + '&pn=' + nm + '&y=' + y;
 	const Param = {
 		method: "GET"
