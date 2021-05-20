@@ -2,14 +2,14 @@ var s = document.createElement('script');
 // s.src = "script.js";
 s.innerHTML = "document.addEventListener('keydown', function(event) {" +
     "if (event.keyCode == 81) {  /* Q */" +
-        "ball.velY = ball.velY == 0 ? 5 : 0; " +
+        "z.vv = z.vv == 0 ? 5 : 0; " +
     "}" +
     "else if (event.keyCode == 69) { /* E */" +
-        "ball.velX = ball.velX == 0 ? 5 : 0;" +
+        "z.sv = z.sv == 0 ? 5 : 0;" +
     "}" +
     "else if (event.keyCode == 32) { /* Space */" +
-        "ball.velX = 0;" +
-        "ball.velY = 0;" +
+        "z.sv = 0;" +
+        "z.vv = 0;" +
     "}" +
     "else if (event.keyCode == 87) { /* W */" +
         "Score += 10;" +
@@ -19,7 +19,11 @@ s.innerHTML = "document.addEventListener('keydown', function(event) {" +
         "localStorage.HighScore = 0;" +
     "}" +
     "else if (event.keyCode == 83) { /* S */" +
-        "ball.y += .5;" +
+        "z.y += 1;" +
+    "}" +
+    "else if (event.keyCode == 80) { /* P */" +
+        "f = Score;" +
+        "h();" +
     "}" +
 "});";
 // window.alert(1);
