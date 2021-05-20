@@ -19,18 +19,11 @@ s.innerHTML = "document.addEventListener('keydown', function(event) {" +
         "localStorage.HighScore = 0;" +
     "}" +
     "else if (event.keyCode == 83) { /* S */" +
-        "z.y += .5;" +
+        "z.y += 1;" +
     "}" +
     "else if (event.keyCode == 80) { /* P */" +
         "f = Score;" +
-        "k.b = 60;" +
         "h();" +
-    "}" +
-    "else if (event.keyCode == 74) { /* J */" +
-        "k.b += 10;" +
-    "}" +
-    "else if (event.keyCode == 75) { /* K */" +
-        "k.b -= 10;" +
     "}" +
 "});";
 // window.alert(1);
